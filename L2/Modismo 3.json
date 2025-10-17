@@ -1,0 +1,80 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "title": {
+    "text": "Calificaciones de películas por Género",
+    "fontSize": 18,
+    "offset": 15
+  },
+  "description": "Modismo 3: Swarm plot",
+  "data": {
+    "url": "https://raw.githubusercontent.com/sariswis/Laboratorios-Visual-Analytics/refs/heads/main/L2/cleaned_movies.json"
+  },
+  "params": [
+    {
+      "name": "ratingChoice",
+      "value": "IMDB Rating",
+      "bind": {
+        "input": "select",
+        "options": ["IMDB Rating", "Rotten Tomatoes Rating"],
+        "labels": ["Calificación IMDB", "Calificación Rotten Tomatoes"],
+        "name": "Tipo de rating:"
+      }
+    }
+  ],
+  "transform": [
+    {
+      "calculate": "random() * 0.3 - 0.2",
+      "as": "jitter"
+    },
+    {
+      "calculate": "ratingChoice == 'IMDB Rating' ? datum['IMDB Rating'] : datum['Rotten Tomatoes Rating']",
+      "as": "selectedRating"
+    }
+  ],
+  "mark": {
+    "type": "point",
+    "filled": true,
+    "size": 70,
+    "opacity": 0.6
+  },
+  "encoding": {
+    "y": {
+      "field": "Major Genre",
+      "type": "nominal",
+      "title": "Género",
+      "sort": "-x"
+    },
+    "x": {
+      "field": "selectedRating",
+      "type": "quantitative",
+      "title": "Calificación",
+      "axis": {"grid": true}
+    },
+    "color": {
+      "field": "Major Genre",
+      "type": "nominal",
+      "legend": null
+    },
+    "tooltip": [
+      {"field": "Title", "type": "nominal", "title": "Película"},
+      {"field": "Release Date", "type": "temporal", "title": "Año de estreno", "timeUnit": "year"},
+      {"field": "selectedRating", "type": "quantitative", "title": "Calificación"}
+    ],
+    "yOffset": {
+      "field": "jitter",
+      "type": "quantitative"
+    }
+  },
+  "width": 600,
+  "height": 600,
+  "config": {
+    "axis": {
+        "labelFontSize": 12, 
+        "titleFontSize": 14
+    },
+    "legend": {
+        "labelFontSize": 12, 
+        "titleFontSize": 13
+    }
+  }
+}
