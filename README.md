@@ -1,1 +1,1 @@
-# Laboratorio-1-Visual-Analytics
+# Laboratorios-Visual-Analytics
