@@ -1,0 +1,82 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "title": {
+    "text": "Relación entre Calificaciones de Rotten Tomatoes e IMDb",
+    "fontSize": 18,
+    "offset": 15
+  },
+  "description": "Modismo 1: Scatter plot con línea de regresión",
+  "data": {
+    "url": "https://raw.githubusercontent.com/sariswis/Laboratorios-Visual-Analytics/refs/heads/main/L2/cleaned_movies.json"
+  },
+  "layer": [
+    {
+      "mark": {
+        "type": "point",
+        "filled": true,
+        "size": 80,
+        "opacity": 0.7
+      },
+      "encoding": {
+        "x": {
+          "field": "Rotten Tomatoes Rating",
+          "type": "quantitative",
+          "title": "Calificación Rotten Tomatoes (%)"
+        },
+        "y": {
+          "field": "IMDB Rating",
+          "type": "quantitative",
+          "title": "Calificación IMDb"
+        },
+        "color": {
+          "field": "Major Genre",
+          "type": "nominal",
+          "title": "Género"
+        },
+        "tooltip": [
+          {"field": "Title", "type": "nominal", "title": "Película"},
+          {"field": "Release Date", "type": "temporal", "timeUnit": "year", "title": "Año de estreno"},
+          {"field": "Rotten Tomatoes Rating", "type": "quantitative", "title": "Rotten Tomatoes"},
+          {"field": "IMDB Rating", "type": "quantitative", "title": "IMDb"}
+        ]
+      }
+    },
+    {
+      "transform": [
+        {
+          "regression": "IMDB Rating",
+          "on": "Rotten Tomatoes Rating",
+          "as": ["Rotten Tomatoes Rating", "IMDB Rating Prediction"]
+        }
+      ],
+      "mark": {
+        "type": "line",
+        "color": "#404040",
+        "strokeWidth": 3
+      },
+      "encoding": {
+        "x": {
+          "field": "Rotten Tomatoes Rating",
+          "type": "quantitative"
+        },
+        "y": {
+          "field": "IMDB Rating Prediction",
+          "type": "quantitative"
+        }
+      }
+    }
+  ],
+  "width": 600,
+  "height": 400,
+  "config": {
+    "axis": {
+        "labelFontSize": 12, 
+        "titleFontSize": 14,
+        "titlePadding": 15
+    },
+    "legend": {
+        "labelFontSize": 12, 
+        "titleFontSize": 13
+    }
+  }
+}
