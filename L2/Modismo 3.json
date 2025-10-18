@@ -19,6 +19,12 @@
         "labels": ["Calificación IMDB", "Calificación Rotten Tomatoes"],
         "name": "Tipo de rating:"
       }
+    },
+    {
+      "name": "pts",
+      "select": {
+        "type": "point"
+      }
     }
   ],
   "transform": [
@@ -34,8 +40,7 @@
   "mark": {
     "type": "point",
     "filled": true,
-    "size": 70,
-    "opacity": 0.6
+    "size": 70
   },
   "encoding": {
     "y": {
@@ -51,9 +56,22 @@
       "axis": {"grid": true}
     },
     "color": {
-      "field": "Major Genre",
-      "type": "nominal",
-      "legend": null
+      "condition": {
+        "param": "pts",
+        "field": "Major Genre",
+        "type": "nominal",
+        "scale": {
+          "scheme": "paired"
+        }
+      },
+      "value": "lightgray"
+    },
+    "opacity": {
+      "condition": {
+        "param": "pts",
+        "value": 0.7
+      },
+      "value": 0.3
     },
     "tooltip": [
       {"field": "Title", "type": "nominal", "title": "Película"},
