@@ -1,0 +1,113 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Diagrama de burbujas que muestra la relación entre calificaciones de IMDB y Rotten Tomatoes, con un filtro por género y escala de tamaño consistente.",
+  "title": {
+    "text": "Relación entre calificaciones IMDB y Rotten Tomatoes por género",
+    "fontSize": 18,
+    "fontWeight": "bold",
+    "anchor": "middle",
+    "color": "#333"
+  },
+  "width": 700,
+  "height": 500,
+  "data": {
+    "url": "https://raw.githubusercontent.com/sariswis/Laboratorios-Visual-Analytics/refs/heads/main/L2/cleaned_movies.json"
+  },
+  "params": [
+    {
+      "name": "genero_sel",
+      "bind": {
+        "input": "select",
+        "options": [
+          "Acción",
+          "Aventura",
+          "Comedia",
+          "Comedia Negra",
+          "Comedia Romántica",
+          "Concierto/Performance",
+          "Documental",
+          "Drama",
+          "Musical",
+          "Suspenso",
+          "Terror",
+          "Vaqueros"
+        ],
+        "name": "Selecciona un género:"
+      },
+      "value": "Drama"
+    }
+  ],
+  "transform": [
+    {
+      "filter": "datum['IMDB Rating'] != null && datum['Rotten Tomatoes Rating'] != null && datum['Major Genre'] != null"
+    },
+    {
+      "calculate": "datum['Major Genre'] == 'Action' ? 'Acción' : datum['Major Genre'] == 'Adventure' ? 'Aventura' : datum['Major Genre'] == 'Comedy' ? 'Comedia' : datum['Major Genre'] == 'Black Comedy' ? 'Comedia Negra' : datum['Major Genre'] == 'Romantic Comedy' ? 'Comedia Romántica' : datum['Major Genre'] == 'Concert/Performance' ? 'Concierto/Performance' : datum['Major Genre'] == 'Documentary' ? 'Documental' : datum['Major Genre'] == 'Drama' ? 'Drama' : datum['Major Genre'] == 'Musical' ? 'Musical' : datum['Major Genre'] == 'Thriller/Suspense' ? 'Suspenso' : datum['Major Genre'] == 'Horror' ? 'Terror' : datum['Major Genre'] == 'Western' ? 'Vaqueros' : datum['Major Genre']",
+      "as": "Género"
+    },
+    {"filter": "datum.Género == genero_sel"},
+    {
+      "calculate": "datum['Worldwide Gross'] / 1000000",
+      "as": "Ingresos (millones)"
+    }
+  ],
+  "mark": {
+    "type": "circle",
+    "opacity": 0.7,
+    "stroke": "black",
+    "strokeWidth": 0.4
+  },
+  "encoding": {
+    "x": {
+      "field": "IMDB Rating",
+      "type": "quantitative",
+      "title": "Puntaje IMDB",
+      "scale": {"domain": [0, 10]}
+    },
+    "y": {
+      "field": "Rotten Tomatoes Rating",
+      "type": "quantitative",
+      "title": "Puntaje Rotten Tomatoes (%)",
+      "scale": {"domain": [0, 100]}
+    },
+    "size": {
+      "field": "Ingresos (millones)",
+      "type": "quantitative",
+      "title": "Ingresos (millones USD)",
+      "scale": {"range": [30, 1000], "domain": [0, 2500]}
+    },
+    "color": {
+      "field": "Género",
+      "type": "nominal",
+      "title": "Género seleccionado",
+      "legend": null
+    },
+    "tooltip": [
+      {"field": "Title", "title": "Título"},
+      {"field": "Género", "title": "Género"},
+      {"field": "IMDB Rating", "title": "Puntaje IMDB"},
+      {
+        "field": "Rotten Tomatoes Rating",
+        "title": "Puntaje Rotten Tomatoes (%)"
+      },
+      {
+        "field": "Ingresos (millones)",
+        "title": "Ingresos (millones USD)",
+        "format": ".2f"
+      },
+      {"field": "Running Time min", "title": "Duración (min)"},
+      {"field": "Release Date", "title": "Fecha de lanzamiento"}
+    ]
+  },
+  "config": {
+    "title": {
+      "anchor": "middle",
+      "fontSize": 18,
+      "fontWeight": "bold",
+      "color": "#333"
+    },
+    "axis": {"labelFontSize": 12, "titleFontSize": 14},
+    "legend": {"labelFontSize": 11, "titleFontSize": 13},
+    "view": {"stroke": null}
+  }
+}
