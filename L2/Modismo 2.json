@@ -1,0 +1,106 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Boxplot que muestra la distribución de calificaciones de películas según su género, con detalles de los outliers.",
+  "title": {
+    "text": "Distribución de calificaciones de películas por género",
+    "fontSize": 18,
+    "fontWeight": "bold",
+    "anchor": "middle",
+    "color": "#333"
+  },
+  "width": 600,
+  "height": 400,
+  "data": {
+    "url": "https://raw.githubusercontent.com/sariswis/Laboratorios-Visual-Analytics/refs/heads/main/L2/cleaned_movies.json"
+  },
+  "params": [
+    {
+      "name": "fuente_puntaje",
+      "bind": {
+        "input": "select",
+        "options": ["IMDB Rating", "Rotten Tomatoes Rating"],
+        "labels": ["IMDB", "Rotten Tomatoes"],
+        "name": "Fuente de calificación:"
+      },
+      "value": "IMDB Rating"
+    }
+  ],
+  "transform": [
+    {"filter": "datum['Major Genre'] != null && datum[fuente_puntaje] != null"},
+    {"calculate": "datum[fuente_puntaje]", "as": "Puntaje"},
+    {
+      "calculate": "fuente_puntaje == 'IMDB Rating' ? 'IMDB' : 'Rotten Tomatoes'",
+      "as": "Fuente"
+    },
+    {
+      "calculate": "datum['Major Genre'] == 'Action' ? 'Acción' : datum['Major Genre'] == 'Adventure' ? 'Aventura' : datum['Major Genre'] == 'Comedy' ? 'Comedia' : datum['Major Genre'] == 'Black Comedy' ? 'Comedia Negra' : datum['Major Genre'] == 'Romantic Comedy' ? 'Comedia Romántica' : datum['Major Genre'] == 'Concert/Performance' ? 'Concierto/Performance' : datum['Major Genre'] == 'Documentary' ? 'Documental' : datum['Major Genre'] == 'Drama' ? 'Drama' : datum['Major Genre'] == 'Musical' ? 'Musical' : datum['Major Genre'] == 'Thriller/Suspense' ? 'Suspenso' : datum['Major Genre'] == 'Horror' ? 'Terror' : datum['Major Genre'] == 'Western' ? 'Vaqueros' : datum['Major Genre']",
+      "as": "Género"
+    }
+  ],
+  "layer": [
+    {
+      "mark": {
+        "type": "boxplot",
+        "extent": "min-max",
+        "size": 18,
+        "fill": "#80b1d3",
+        "stroke": "#333",
+        "tooltip": false
+      },
+      "encoding": {
+        "x": {
+          "field": "Género",
+          "type": "nominal",
+          "title": "Género cinematográfico",
+          "axis": {"labelAngle": 25},
+          "sort": "ascending"
+        },
+        "y": {
+          "field": "Puntaje",
+          "type": "quantitative",
+          "title": "Puntaje de calificación"
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "joinaggregate": [
+            {"op": "q1", "field": "Puntaje", "as": "q1"},
+            {"op": "q3", "field": "Puntaje", "as": "q3"}
+          ],
+          "groupby": ["Género"]
+        },
+        {"calculate": "datum.q3 - datum.q1", "as": "iqr"},
+        {"calculate": "datum.q1 - 1.5 * datum.iqr", "as": "limite_inferior"},
+        {"calculate": "datum.q3 + 1.5 * datum.iqr", "as": "limite_superior"},
+        {
+          "filter": "datum.Puntaje < datum.limite_inferior || datum.Puntaje > datum.limite_superior"
+        }
+      ],
+      "mark": {"type": "point", "filled": true, "color": "#666", "size": 60},
+      "encoding": {
+        "x": {"field": "Género", "type": "nominal"},
+        "y": {"field": "Puntaje", "type": "quantitative"},
+        "tooltip": [
+          {"field": "Title", "title": "Título de la película"},
+          {"field": "Release Date", "title": "Fecha de lanzamiento"},
+          {"field": "Puntaje", "title": "Puntaje"},
+          {"field": "Fuente", "title": "Fuente de calificación"},
+          {"field": "Género", "title": "Género"}
+        ]
+      }
+    }
+  ],
+  "config": {
+    "title": {
+      "anchor": "middle",
+      "fontSize": 18,
+      "fontWeight": "bold",
+      "color": "#333"
+    },
+    "boxplot": {"median": {"color": "black"}, "outliers": {"color": "#666"}},
+    "axis": {"labelFontSize": 12, "titleFontSize": 14},
+    "view": {"stroke": null}
+  }
+}
